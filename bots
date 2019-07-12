@@ -1,0 +1,288 @@
+const Discord = require('discord.js');
+const client = new Discord.Client();
+const { Client, Attachment } = require('discord.js');
+const chalk = require('chalk');
+const fs = require('fs');
+const moment = require('moment');
+const {RichEmbed} = require("discord.js");
+
+
+var prefix = "d!"
+
+let cooldown = new Set();
+let cdseconds = 5;
+
+
+client.on('ready', () => {
+  console.log(`Basarili ${client.user.tag}`);
+});
+
+client.on('message', msg => {
+  if (msg.content === prefix + 'Seni kim yaptı') {
+    msg.channel.send('Beni Berkaneki kodladı ona minettarım');
+  }
+  if (msg.content === 'Sa') {
+    msg.channel.send('Selam');
+  }
+  if (msg.content === 'alo') {
+    msg.channel.send('aloğğğ');
+  }
+  if (msg.content === prefix + 'Tag') {
+    msg.reply('Biz Birer Sövüşçü aptalmıyız ne tagı');
+  }
+  if (msg.content === 'Kimse varmı') {
+    msg.reply('Cevap vermedeğine göre yok');
+  }
+  if (msg.content === 'Geliştiricin ile doğru konuş') {
+    msg.channel.send('Çok çok üzgünüm sahip boş anıma denk geldi bir daha olmayacak bunun şerefine kimi banlayım');
+  }
+  if (msg.content === 'Selam') {
+    msg.channel.send('Merhaba');
+  }
+  if (msg.content === 'Sunucu sahibi kim') {
+    msg.channel.send('Wayn');
+  }
+  if (msg.content === 'Selamun Aleyküm') {
+    msg.channel.send('Ve Aleyküm Selam');
+  }
+  if (msg.content.toLowerCase()  === 'Yetkili biri baka bilirmi') {
+    msg.channel.send('Evet dinliyorum efendim');
+  }
+  if (msg.content.toLowerCase()  === prefix + 'Admin Tools') {
+    msg.channel.send('Admin Tools. w!Gel , w!Ban');
+  }
+  if (msg.content === prefix + 'Ping') {
+			msg.channel.sendMessage('Senin internet hızın **' + client.ping + '** ms!');
+  }
+  if (msg.content.toLowerCase() === 'sa') {
+			msg.author.sendMessage('Aleyküm selam ^^');
+		}
+    if (msg.content === 'Nasılsın güzelim') {
+        msg.author.sendMessage('Bu sunucuda hiç bir kıza yazdığını görmeyeyim yoksa yüce güçleri olan berkanekinin mjölnırı kafana düşe bilir');
+      }
+      if (msg.content === prefix + 'Yardım') {
+        msg.reply('w!Seni kim yaptı , w!Ping , w!Tag ');
+      }
+      if (msg.content === 'aşkım') {
+        msg.reply('efendim Kralım');
+      }
+});
+client.on('ready', () => {
+  console.log('Ben hazirim');
+});
+
+// Create an event listener for messages
+client.on('message', message => {
+  // If the message is "what is my avatar"
+  if (message.content === prefix + 'Avatar') {
+    // Send the user's avatar URL
+    message.reply(message.author.avatarURL);
+  }
+});
+//Kareografi Satırı
+client.on('message', message => {
+    // If the message is '!rip'
+    if (message.content === prefix + 'rip') {
+        // Create the attachment using Attachment
+        const attachment = new Attachment('https://i.imgur.com/w3duR07.png');
+        // Send the attachment in the message channel with a content
+        message.channel.send(`${message.author},`, attachment);
+    }
+});
+//BAN Komut satırı
+
+client.on('message', message => {
+  // Ignore messages that aren't from a guild
+  if (!message.guild) return;
+
+  // if the message content starts with "!ban"
+  if (message.content.startsWith( prefix + 'Ban')) {
+    // Assuming we mention someone in the message, this will return the user
+    // Read more about mentions over at https://discord.js.org/#/docs/main/stable/class/MessageMentions
+    const user = message.mentions.users.first();
+    // If we have a user mentioned
+    if (user) {
+      // Now we get the member from the user
+      const member = message.guild.member(user);
+      // If the member is in the guild
+      if (member) {
+        /**
+         * Ban the member
+         * Make sure you run this on a member, not a user!
+         * There are big differences between a user and a member
+         * Read more about what ban options there are over at
+         * https://discord.js.org/#/docs/main/stable/class/GuildMember?scrollTo=ban
+         */
+        member.ban({
+          reason: 'They were bad!',
+        }).then(() => {
+          // We let the message author know we were able to ban the person
+          message.reply(`Thorun çekicini ${user.tag}'ın Kafasına vurdun`);
+        }).catch(err => {
+          // An error happened
+          // This is generally due to the bot not being able to ban the member,
+          // either due to missing permissions or role hierarchy
+          message.reply('Üyeyi Yasakalayamadın!');
+          // Log the error
+          console.error(err);
+        });
+      } else {
+        // The mentioned user isn't in this guild
+        message.reply('Bu kullanıcı bu loncada değil!');
+      }
+    } else {
+    // Otherwise, if no user was mentioned
+      message.reply('Yasaklamak için kullanıcadan bahsetmedin!');
+    }
+  }
+});
+//müzik botu
+client.on('message', message => {
+  // Voice only works in guilds, if the message does not come from a guild,
+  // we ignore it
+  if (!message.guild) return;
+
+  if (message.content === prefix + 'Gel') {
+    // Only try to join the sender's voice channel if they are in one themselves
+    if (message.member.voiceChannel) {
+      message.member.voiceChannel.join()
+        .then(connection => { // Connection is an instance of VoiceConnection
+          message.reply('Beni Çağırdın geldim');
+        })
+        .catch(console.log);
+    } else {
+      message.reply('Oğlum Manyaklaşma önce bir ses kanalına katıl öyle gel!');
+connection.playArbitraryInput('http://mysite.com/sound.mp3');
+    }
+  }
+});
+client.on("guildMemberAdd", member => {
+
+	var channel = member.guild.channels.find("name", "giriş-çıkış");
+	if (!channel) return;
+
+	var role = member.guild.roles.find("name", "üye");
+	if (!role) return;
+
+	member.addRole(role);
+
+	channel.send(member + " artık " + role + " rolü ile aramızda");
+
+	member.send("Aramıza hoş geldin! Artık @üye rolüne sahipsin!")
+
+});
+
+/////////////////////////////////////////////
+client.elevation = message => {
+  if(!message.guild) {
+	return; }
+  let permlvl = 0;
+  if (message.member.hasPermission("BAN_MEMBERS")) permlvl = 2;
+  if (message.member.hasPermission("ADMINISTRATOR")) permlvl = 3;
+  if (message.author.id === '525998235760721920') permlvl = 4;
+  return permlvl;
+};
+
+var regToken = /[\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}/g;
+
+client.on('warn', e => {
+  console.log(chalk.bgYellow(e.replace(regToken, 'that was redacted')));
+});
+
+client.on('error', e => {
+  console.log(chalk.bgRed(e.replace(regToken, 'that was redacted')));
+});
+
+////////////////////////////////////////////////////
+exports.run = (client, message, args) => {
+    let guild = message.guild
+    let duyurular = guild.channels.find('name', 'duyurular');
+    if (!528649991695368202) return message.reply('`duyurular` kanalını bulamıyorum.');
+    let mesaj = args.slice(0).join(' ');
+    if (mesaj.length < 1) return message.reply('Bir şey yazmadınız.');
+    message.delete();
+    const embed = new Discord.RichEmbed()
+    .setColor(0xD97634)
+    .setDescription(`:anchor: **Duyuru ;**\n${mesaj}`)
+    return guild.channels.get(duyurular.id).sendEmbed(embed);
+};
+
+exports.conf = {
+  enabled: true,
+  guildOnly: false,
+  aliases: ['duyuru', 'duyuruyap'],
+  permLevel: 0
+};
+
+exports.help = {
+  name: 'duyuruyap',
+  description: 'Sunucuda Duyuru yapmanızı sağlar.',
+  usage: 'duyuruyap [yazı]'
+};
+/////////////////////////////////////////
+var oyun = [
+        "w!Yardım",
+        "w!Yardım Yeni özellikler",
+        "Bu bot Wayside'e özel olarak yapılmıştır"
+    ];
+
+    setInterval(function() {
+
+        var random = Math.floor(Math.random()*(oyun.length-0+1)+0);
+
+        client.user.setGame(oyun[random], "https://www.twitch.tv/esrarchannel");
+        }, 2 * 2500);
+
+
+////////////////////////////////////////////
+ //if(!message.content.startsWith(prefix)) return;
+ //if(cooldown.has(message.author.id)){
+   //message.delete();
+   //message.reply("Sen çok hızlısın tekrar mesaj atmak için 5 saniye beklemilisin")
+ //}
+ //if(!message.member.hasPermission("ADMINISTRATOR")){
+  // cooldown.add(message.author.id);
+// }
+
+//setimeout(() => {
+  //cooldown.delete(message.author.id)
+//}, cdseconds * 1000)
+
+//};
+///////////////////////////////////////////////////////
+
+//var tmz=[msg.content]
+//client.on('message', message => {
+  //  if (msg.content == prefix + "temizle") {
+    //  if (!message.guild.member(client.user).hasPermission('MANAGE_MESSAGES')) return msg.channel.send(':no_entry: `Sanırım bu komut için düzgün bir yetkiye sahip değilim.`').catch(console.error);
+    //  var args = message.content.split(" ");
+      //           if (!msg.member.hasPermission("MANAGE_MESSAGES")) return msg.channel.send(":no_entry: `Üzgünüm, bu komut için yeterli yetkiye sahip değilsin.`");
+      //           if (isNaN(args[1])) return msg.channel.send(':warning: `Lütfen silmek için geçerli bir sayı gir.`');
+        //         if (args[1] > 100) return msg.channel.send(':warning: `Lütfen 100den küçük bir sayı gir.`');
+        //         msg.channel.bulkDelete(args[0]);
+          //       var cleanEmbed = new Discord.RichEmbed()
+          //       .setAuthor('Mr.Yargıç')
+            //     .setDescription(`:white_check_mark: **${args[0]}** mesaj silindi.`)
+            //     .setFooter('Yetkili ' + msg.author.tag, msg.author.avatarURL + 'tarafından silindi.')
+            //     .setColor('#ffffff');
+              //   msg.channel.send(cleanEmbed);
+//};
+//});
+/////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////
+//token
+
+client.login('NTk4OTEyMTI0MTQzNjY1MTYy.XSdihg.RzXCAmmKIhoSDnt0i44SGrxwhsQ');
